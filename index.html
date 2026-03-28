@@ -1,85 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MiniYT</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f0f0f;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiniYT</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0f0f0f;
+  color: white;
+}
 
-    .container {
-      text-align: center;
-      background: #1c1c1c;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
+.container {
+  max-width: 500px;
+  margin: 60px auto;
+  text-align: center;
+  background: #1c1c1c;
+  padding: 20px;
+  border-radius: 12px;
+}
 
-    input {
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      margin-top: 10px;
-      width: 200px;
-    }
+input {
+  display: block;
+  margin: 10px auto;
+  padding: 10px;
+  width: 80%;
+  border-radius: 6px;
+  border: none;
+}
 
-    button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      background: red;
-      color: white;
-      cursor: pointer;
-    }
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background: red;
+  color: white;
+  cursor: pointer;
+  margin-top: 10px;
+}
 
-    .channel {
-      display: none;
-    }
+.hidden { display: none; }
 
-    .badge {
-      color: #3ea6ff;
-      margin-left: 8px;
-      font-size: 18px;
-    }
-  </style>
+.video {
+  background: #222;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.badge {
+  color: #3ea6ff;
+}
+</style>
 </head>
 <body>
 
-<div class="container" id="loginBox">
-  <h2>Login to MiniYT</h2>
-  <input type="password" id="password" placeholder="Enter password">
-  <br>
+<div class="container" id="auth">
+  <h2>MiniYT</h2>
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="register()">Register</button>
   <button onclick="login()">Login</button>
-  <p id="error" style="color:red;"></p>
+  <p id="authMsg"></p>
 </div>
 
-<div class="container channel" id="channelBox">
-  <h1>MiniYT Channel <span class="badge">✔</span></h1>
-  <p>Welcome to your channel!</p>
+<div class="container hidden" id="app">
+  <h2 id="welcome"></h2>
+  <p>Your Channel <span class="badge">✔</span></p>
+
+  <h3>Upload Video</h3>
+  <input id="videoTitle" placeholder="Video title">
+  <input id="videoURL" placeholder="Video URL (YouTube embed or file link)">
+  <button onclick="uploadVideo()">Upload</button>
+
+  <h3>Videos</h3>
+  <div id="videos"></div>
 </div>
 
 <script>
-  function login() {
-    const pass = document.getElementById("password").value;
-    const error = document.getElementById("error");
+let users = JSON.parse(localStorage.getItem("users")) || {};
+let currentUser = null;
 
-    if (pass === "nico044037") {
-      document.getElementById("loginBox").style.display = "none";
-      document.getElementById("channelBox").style.display = "block";
-    } else {
-      error.textContent = "Wrong password!";
-    }
+function save() {
+  localStorage.setItem("users", JSON.stringify(users));
+}
+
+function register() {
+  const u = username.value;
+  const p = password.value;
+
+  if (!u || !p) {
+    authMsg.textContent = "Fill everything";
+    return;
   }
+
+  if (users[u]) {
+    authMsg.textContent = "User exists";
+    return;
+  }
+
+  users[u] = { password: p, videos: [] };
+  save();
+  authMsg.textContent = "Registered! Now login.";
+}
+
+function login() {
+  const u = username.value;
+  const p = password.value;
+
+  if (users[u] && users[u].password === p) {
+    currentUser = u;
+    showApp();
+  } else {
+    authMsg.textContent = "Wrong login";
+  }
+}
+
+function showApp() {
+  auth.classList.add("hidden");
+  app.classList.remove("hidden");
+  welcome.textContent = "Welcome " + currentUser;
+  renderVideos();
+}
+
+function uploadVideo() {
+  const title = videoTitle.value;
+  const url = videoURL.value;
+
+  if (!title || !url) return;
+
+  users[currentUser].videos.push({ title, url });
+  save();
+  renderVideos();
+}
+
+function renderVideos() {
+  videos.innerHTML = "";
+
+  users[currentUser].videos.forEach(v => {
+    const div = document.createElement("div");
+    div.className = "video";
+    div.innerHTML = `
+      <h4>${v.title}</h4>
+      <iframe width="100%" height="200" src="${v.url}" frameborder="0" allowfullscreen></iframe>
+    `;
+    videos.appendChild(div);
+  });
+}
 </script>
 
 </body>
