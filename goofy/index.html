@@ -1,1 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>100 Metal Pipe Buttons</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: black;
+    color: white;
+    text-align: center;
+  }
+  h1 {
+    margin-top: 20px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 10px;
+    padding: 20px;
+  }
+  button {
+    padding: 15px;
+    font-size: 12px;
+    background: #444;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+  }
+  button:hover {
+    background: #888;
+  }
+</style>
+</head>
+<body>
 
+<h1>🔩 100 METAL PIPE BUTTONS 🔩</h1>
+
+<div class="grid" id="buttons"></div>
+
+<script>
+// metal pipe sound (you can replace this if it breaks)
+const soundURL = "https://www.myinstants.com/media/sounds/metal-pipe.mp3";
+
+function playPipe() {
+  const audio = new Audio(soundURL);
+  audio.play();
+}
+
+// create 100 buttons
+const container = document.getElementById("buttons");
+
+for (let i = 1; i <= 100; i++) {
+  const btn = document.createElement("button");
+  btn.innerText = "PIPE " + i;
+  btn.onclick = playPipe;
+  container.appendChild(btn);
+}
+</script>
+
+</body>
+</html>
+function playPipe() {
+  for (let i = 0; i < 3; i++) {
+    const audio = new Audio(soundURL);
+    audio.play();
+  }
+}
