@@ -111,10 +111,28 @@ function login(){
   } else authMsg.textContent="Wrong login";
 }
 
+function convertToEmbed(url){
+  // convert normal YouTube links to embed format
+  if(url.includes("watch?v=")){
+    return url.replace("watch?v=","embed/");
+  }
+  if(url.includes("youtu.be/")){
+    return url.replace("youtu.be/","www.youtube.com/embed/");
+  }
+  return url;
+}
+
 function uploadVideo(){
   const title=videoTitle.value, url=videoURL.value;
   if(!title||!url) return;
-  users[currentUser].videos.push({title,url});
+
+  const embedUrl = convertToEmbed(url);
+
+  users[currentUser].videos.push({title,url:embedUrl});
+  save();
+  renderVideos();
+  renderAllVideos();
+});
   save();
   renderVideos();
   renderAllVideos();
