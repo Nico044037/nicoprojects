@@ -5,59 +5,61 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MiniYT</title>
 <style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #0f0f0f;
-  color: white;
-}
+body { margin:0; font-family: Arial; background:#0f0f0f; color:white; }
 
-.container {
-  max-width: 500px;
-  margin: 60px auto;
-  text-align: center;
-  background: #1c1c1c;
-  padding: 20px;
-  border-radius: 12px;
-}
-
-input {
-  display: block;
-  margin: 10px auto;
-  padding: 10px;
-  width: 80%;
-  border-radius: 6px;
-  border: none;
+header {
+  display:flex;
+  justify-content:space-between;
+  padding:15px;
+  background:#202020;
 }
 
 button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
-  background: red;
-  color: white;
-  cursor: pointer;
-  margin-top: 10px;
+  padding:8px 15px;
+  border:none;
+  border-radius:6px;
+  background:red;
+  color:white;
+  cursor:pointer;
 }
 
-.hidden { display: none; }
+.container { padding:20px; }
 
 .video {
-  background: #222;
-  margin: 10px;
-  padding: 10px;
-  border-radius: 10px;
+  background:#1c1c1c;
+  margin:10px 0;
+  padding:10px;
+  border-radius:10px;
 }
 
-.badge {
-  color: #3ea6ff;
+.hidden { display:none; }
+
+input {
+  display:block;
+  margin:10px 0;
+  padding:10px;
+  width:100%;
+  border-radius:6px;
+  border:none;
 }
+
+.badge { color:#3ea6ff; }
 </style>
 </head>
 <body>
 
-<div class="container" id="auth">
+<header>
   <h2>MiniYT</h2>
+  <button onclick="showAuth()">Login</button>
+</header>
+
+<div class="container" id="home">
+  <h3>Videos</h3>
+  <div id="allVideos"></div>
+</div>
+
+<div class="container hidden" id="auth">
+  <h3>Login / Register</h3>
   <input id="username" placeholder="Username">
   <input id="password" type="password" placeholder="Password">
   <button onclick="register()">Register</button>
@@ -66,15 +68,15 @@ button {
 </div>
 
 <div class="container hidden" id="app">
-  <h2 id="welcome"></h2>
+  <h3 id="welcome"></h3>
   <p>Your Channel <span class="badge">✔</span></p>
 
-  <h3>Upload Video</h3>
+  <h4>Upload Video</h4>
   <input id="videoTitle" placeholder="Video title">
-  <input id="videoURL" placeholder="Video URL (YouTube embed or file link)">
+  <input id="videoURL" placeholder="Embed URL">
   <button onclick="uploadVideo()">Upload</button>
 
-  <h3>Videos</h3>
+  <h4>Your Videos</h4>
   <div id="videos"></div>
 </div>
 
@@ -82,72 +84,65 @@ button {
 let users = JSON.parse(localStorage.getItem("users")) || {};
 let currentUser = null;
 
-function save() {
-  localStorage.setItem("users", JSON.stringify(users));
+function save(){ localStorage.setItem("users", JSON.stringify(users)); }
+
+function showAuth(){
+  home.classList.add("hidden");
+  auth.classList.remove("hidden");
 }
 
-function register() {
-  const u = username.value;
-  const p = password.value;
-
-  if (!u || !p) {
-    authMsg.textContent = "Fill everything";
-    return;
-  }
-
-  if (users[u]) {
-    authMsg.textContent = "User exists";
-    return;
-  }
-
-  users[u] = { password: p, videos: [] };
+function register(){
+  const u=username.value, p=password.value;
+  if(!u||!p) return authMsg.textContent="Fill all";
+  if(users[u]) return authMsg.textContent="User exists";
+  users[u]={password:p,videos:[]};
   save();
-  authMsg.textContent = "Registered! Now login.";
+  authMsg.textContent="Registered!";
 }
 
-function login() {
-  const u = username.value;
-  const p = password.value;
-
-  if (users[u] && users[u].password === p) {
-    currentUser = u;
-    showApp();
-  } else {
-    authMsg.textContent = "Wrong login";
-  }
+function login(){
+  const u=username.value, p=password.value;
+  if(users[u] && users[u].password===p){
+    currentUser=u;
+    auth.classList.add("hidden");
+    app.classList.remove("hidden");
+    welcome.textContent="Welcome "+u;
+    renderVideos();
+  } else authMsg.textContent="Wrong login";
 }
 
-function showApp() {
-  auth.classList.add("hidden");
-  app.classList.remove("hidden");
-  welcome.textContent = "Welcome " + currentUser;
-  renderVideos();
-}
-
-function uploadVideo() {
-  const title = videoTitle.value;
-  const url = videoURL.value;
-
-  if (!title || !url) return;
-
-  users[currentUser].videos.push({ title, url });
+function uploadVideo(){
+  const title=videoTitle.value, url=videoURL.value;
+  if(!title||!url) return;
+  users[currentUser].videos.push({title,url});
   save();
   renderVideos();
+  renderAllVideos();
 }
 
-function renderVideos() {
-  videos.innerHTML = "";
-
-  users[currentUser].videos.forEach(v => {
-    const div = document.createElement("div");
-    div.className = "video";
-    div.innerHTML = `
-      <h4>${v.title}</h4>
-      <iframe width="100%" height="200" src="${v.url}" frameborder="0" allowfullscreen></iframe>
-    `;
+function renderVideos(){
+  videos.innerHTML="";
+  users[currentUser].videos.forEach(v=>{
+    const div=document.createElement("div");
+    div.className="video";
+    div.innerHTML=`<h4>${v.title}</h4><iframe width="100%" height="200" src="${v.url}" allowfullscreen></iframe>`;
     videos.appendChild(div);
   });
 }
+
+function renderAllVideos(){
+  allVideos.innerHTML="";
+  for(const user in users){
+    users[user].videos.forEach(v=>{
+      const div=document.createElement("div");
+      div.className="video";
+      div.innerHTML=`<h4>${v.title} - ${user}</h4><iframe width="100%" height="200" src="${v.url}" allowfullscreen></iframe>`;
+      allVideos.appendChild(div);
+    });
+  }
+}
+
+renderAllVideos();
 </script>
 
 </body>
