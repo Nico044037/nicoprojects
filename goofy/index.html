@@ -2,16 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>100 Metal Pipe Buttons</title>
+<title>100 Goofy Sound Buttons</title>
 <style>
   body {
     font-family: Arial, sans-serif;
-    background: black;
+    background: #111;
     color: white;
     text-align: center;
-  }
-  h1 {
-    margin-top: 20px;
   }
   .grid {
     display: grid;
@@ -22,48 +19,47 @@
   button {
     padding: 15px;
     font-size: 12px;
-    background: #444;
+    background: #ff00aa;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
-    color: white;
   }
   button:hover {
-    background: #888;
+    background: #ff66cc;
   }
 </style>
 </head>
 <body>
 
-<h1>🔩 100 METAL PIPE BUTTONS 🔩</h1>
+<h1>🎺 100 Goofy Ahh Sound Buttons 🎺</h1>
 
 <div class="grid" id="buttons"></div>
 
 <script>
-// metal pipe sound (you can replace this if it breaks)
-const soundURL = "https://www.myinstants.com/media/sounds/metal-pipe.mp3";
+const sounds = [
+  "https://www.myinstants.com/media/sounds/vine-boom.mp3",
+  "https://www.myinstants.com/media/sounds/goofy-ahh-car-horn.mp3",
+  "https://www.myinstants.com/media/sounds/cartoon-boing.mp3",
+  "https://www.myinstants.com/media/sounds/bruh.mp3",
+  "https://www.myinstants.com/media/sounds/windows-error.mp3"
+];
 
-function playPipe() {
-  const audio = new Audio(soundURL);
+function playRandomSound() {
+  const sound = sounds[Math.floor(Math.random() * sounds.length)];
+  const audio = new Audio(sound);
   audio.play();
 }
 
-// create 100 buttons
+// generate 100 buttons
 const container = document.getElementById("buttons");
 
 for (let i = 1; i <= 100; i++) {
   const btn = document.createElement("button");
-  btn.innerText = "PIPE " + i;
-  btn.onclick = playPipe;
+  btn.innerText = "Sound " + i;
+  btn.onclick = playRandomSound;
   container.appendChild(btn);
 }
 </script>
 
 </body>
 </html>
-function playPipe() {
-  for (let i = 0; i < 3; i++) {
-    const audio = new Audio(soundURL);
-    audio.play();
-  }
-}
