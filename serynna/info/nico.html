@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nico Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #0a0f2c, #0f1c4d, #123c7a);
+  color: white;
+  overflow-x: hidden;
+}
+
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+.card {
+  background: rgba(255,255,255,0.08);
+  border-radius: 25px;
+  padding: 30px;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 0 40px rgba(0,150,255,0.4);
+  text-align: center;
+  transition: 0.4s;
+}
+
+.card:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 80px rgba(0,150,255,1);
+}
+
+h1 {
+  font-size: 3em;
+  color: #4db8ff;
+  text-shadow: 0 0 20px #4db8ff;
+}
+
+.typing {
+  border-right: 3px solid #4db8ff;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.badge {
+  display: inline-block;
+  padding: 8px 15px;
+  border-radius: 10px;
+  background: #4db8ff;
+  color: black;
+  margin: 5px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.badge:hover {
+  box-shadow: 0 0 20px #4db8ff;
+}
+
+.section {
+  margin-top: 30px;
+}
+
+.skin-viewer img {
+  border-radius: 10px;
+  box-shadow: 0 0 25px #4db8ff;
+  transition: 0.3s;
+}
+
+.skin-viewer img:hover {
+  transform: scale(1.15);
+}
+
+.music-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  background: #4db8ff;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.music-btn:hover {
+  box-shadow: 0 0 20px #4db8ff;
+}
+
+.status {
+  margin-top: 15px;
+  font-size: 0.9em;
+  color: #00eaff;
+}
+
+footer {
+  text-align: center;
+  margin-top: 30px;
+  color: #aaa;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="particles"></canvas>
+
+<div class="container">
+  <div class="card">
+    <h1 class="typing" id="typing"></h1>
+    <p>Minecraft Player • 18</p>
+
+    <div>
+      <span class="badge">AvoidMyNooci</span>
+      <span class="badge">Taken 💙</span>
+    </div>
+
+    <div class="status">● Discord ID: 1258115928525373570</div>
+
+    <div class="skin-viewer">
+      <h2>🧍 Skin</h2>
+      <img src="https://mc-heads.net/body/AvoidMyNooci/200" alt="skin">
+    </div>
+
+    <button class="music-btn" onclick="toggleMusic()">🎵 Play Music</button>
+
+    <div class="section">
+      <h2>✨ About</h2>
+      <p>Nico is a chill Minecraft player who loves vibing, building, and playing with Luna 💙</p>
+    </div>
+
+    <div class="section">
+      <h2>🎮 Fun Facts</h2>
+      <p>• Plays a lot with Luna 💙</p>
+      <p>• Chill but skilled 😎</p>
+      <p>• Late night gamer 🌙</p>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>© 2026 Nico</p>
+  </footer>
+</div>
+
+<audio id="music" loop>
+  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b0c8d.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// typing effect
+const text = "Nico 💙";
+let i = 0;
+function type() {
+  if (i < text.length) {
+    document.getElementById("typing").innerHTML += text.charAt(i);
+    i++;
+    setTimeout(type, 80);
+  }
+}
+type();
+
+// music toggle
+function toggleMusic() {
+  const music = document.getElementById("music");
+  if (music.paused) {
+    music.play();
+  } else {
+    music.pause();
+  }
+}
+
+// blue particles animation
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+for (let i = 0; i < 50; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    size: Math.random() * 4 + 1,
+    speed: Math.random() * 1 + 0.3
+  });
+}
+
+function drawParticle(x, y, size) {
+  ctx.fillStyle = '#4db8ff';
+  ctx.beginPath();
+  ctx.arc(x, y, size, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    drawParticle(p.x, p.y, p.size);
+    p.y += p.speed;
+    if (p.y > canvas.height) {
+      p.y = 0;
+      p.x = Math.random() * canvas.width;
+    }
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+</body>
+</html>
