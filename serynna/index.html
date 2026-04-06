@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MossSMP</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body {
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+    text-align: center;
+}
+
+header {
+    padding: 60px 20px;
+}
+
+h1 {
+    font-size: 3.5em;
+    color: #7CFC00;
+    text-shadow: 0 0 20px #7CFC00;
+}
+
+.server-ip {
+    font-size: 1.5em;
+    margin-top: 10px;
+    color: #00ffcc;
+}
+
+.version {
+    margin-top: 5px;
+    color: #ccc;
+}
+
+.play-btn {
+    margin-top: 30px;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    background: #7CFC00;
+    color: black;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.play-btn:hover {
+    background: #00ffcc;
+    transform: scale(1.1);
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 40px;
+}
+
+.card {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px) scale(1.05);
+}
+
+footer {
+    margin-top: 40px;
+    padding: 20px;
+    background: rgba(0,0,0,0.5);
+}
+
+</style>
+</head>
+<body>
+
+<header>
+    <h1>MossSMP</h1>
+    <div class="server-ip">mossSMP.playserver.be</div>
+    <div class="version">Version: 1.21.11</div>
+    <button class="play-btn" onclick="copyIP()">Copy IP</button>
+</header>
+
+<section class="features">
+    <div class="card">
+        <h2>⚔️ PvP</h2>
+        <p>Fight other players and dominate the server.</p>
+    </div>
+    <div class="card">
+        <h2>💰 Economy</h2>
+        <p>Earn money, trade, and become rich.</p>
+    </div>
+    <div class="card">
+        <h2>🌍 Survival</h2>
+        <p>Classic SMP experience with cool features.</p>
+    </div>
+    <div class="card">
+        <h2>🔥 Events</h2>
+        <p>Weekly events with awesome rewards.</p>
+    </div>
+</section>
+
+<footer>
+    <p>© 2026 MossSMP - All rights reserved</p>
+</footer>
+
+<script>
+function copyIP() {
+    navigator.clipboard.writeText("mossSMP.playserver.be");
+    alert("IP copied!");
+}
+</script>
+
+</body>
+</html>
