@@ -3,119 +3,248 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MossSMP</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<title>Serynna Profile</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+
 <style>
 body {
-    margin: 0;
-    font-family: 'Orbitron', sans-serif;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    color: white;
-    text-align: center;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+  color: white;
+  overflow-x: hidden;
 }
 
-header {
-    padding: 60px 20px;
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 0;
 }
 
-h1 {
-    font-size: 3.5em;
-    color: #7CFC00;
-    text-shadow: 0 0 20px #7CFC00;
-}
-
-.server-ip {
-    font-size: 1.5em;
-    margin-top: 10px;
-    color: #00ffcc;
-}
-
-.version {
-    margin-top: 5px;
-    color: #ccc;
-}
-
-.play-btn {
-    margin-top: 30px;
-    padding: 15px 30px;
-    font-size: 1.2em;
-    background: #7CFC00;
-    color: black;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.play-btn:hover {
-    background: #00ffcc;
-    transform: scale(1.1);
-}
-
-.features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    padding: 40px;
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: auto;
+  padding: 40px 20px;
 }
 
 .card {
-    background: rgba(255,255,255,0.1);
-    padding: 20px;
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
-    transition: 0.3s;
+  background: rgba(255,255,255,0.08);
+  border-radius: 25px;
+  padding: 30px;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 0 40px rgba(255,122,198,0.4);
+  text-align: center;
+  transition: 0.4s;
 }
 
 .card:hover {
-    transform: translateY(-10px) scale(1.05);
+  transform: scale(1.04);
+  box-shadow: 0 0 80px rgba(255,122,198,1);
+}
+
+h1 {
+  font-size: 3em;
+  color: #ff7ac6;
+  text-shadow: 0 0 20px #ff7ac6;
+}
+
+.typing {
+  border-right: 3px solid #ff7ac6;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.badge {
+  display: inline-block;
+  padding: 8px 15px;
+  border-radius: 10px;
+  background: #ff7ac6;
+  color: black;
+  margin: 5px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.badge:hover {
+  box-shadow: 0 0 20px #ff7ac6;
+}
+
+/* 🔵 Nico link style */
+.nico-link {
+  color: #4db8ff;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.nico-link:hover {
+  text-shadow: 0 0 15px #4db8ff;
+  transform: scale(1.05);
+}
+
+.section {
+  margin-top: 30px;
+}
+
+.skin-viewer img {
+  border-radius: 10px;
+  box-shadow: 0 0 25px #ff7ac6;
+  transition: 0.3s;
+}
+
+.skin-viewer img:hover {
+  transform: scale(1.15);
+}
+
+.music-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  background: #ff7ac6;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.music-btn:hover {
+  box-shadow: 0 0 20px #ff7ac6;
+}
+
+.status {
+  margin-top: 15px;
+  font-size: 0.9em;
+  color: #00ff99;
 }
 
 footer {
-    margin-top: 40px;
-    padding: 20px;
-    background: rgba(0,0,0,0.5);
+  text-align: center;
+  margin-top: 30px;
+  color: #aaa;
 }
-
 </style>
 </head>
+
 <body>
 
-<header>
-    <h1>MossSMP</h1>
-    <div class="server-ip">mossSMP.playserver.be</div>
-    <div class="version">Version: 1.21.11</div>
-    <button class="play-btn" onclick="copyIP()">Copy IP</button>
-</header>
+<canvas id="hearts"></canvas>
 
-<section class="features">
-    <div class="card">
-        <h2>⚔️ PvP</h2>
-        <p>Fight other players and dominate the server.</p>
-    </div>
-    <div class="card">
-        <h2>💰 Economy</h2>
-        <p>Earn money, trade, and become rich.</p>
-    </div>
-    <div class="card">
-        <h2>🌍 Survival</h2>
-        <p>Classic SMP experience with cool features.</p>
-    </div>
-    <div class="card">
-        <h2>🔥 Events</h2>
-        <p>Weekly events with awesome rewards.</p>
-    </div>
-</section>
+<div class="container">
+  <div class="card">
+    <h1 class="typing" id="typing"></h1>
+    <p>Minecraft Player • 18</p>
 
-<footer>
-    <p>© 2026 MossSMP - All rights reserved</p>
-</footer>
+    <div>
+      <span class="badge">serynna</span>
+      <span class="badge">Taken ❤️</span>
+    </div>
+
+    <div class="status">● Online on Discord</div>
+
+    <div class="skin-viewer">
+      <h2>🧍‍♀️ Skin</h2>
+      <img src="https://mc-heads.net/body/serynna/200" alt="skin">
+    </div>
+
+    <button class="music-btn" onclick="toggleMusic()">🎵 Play Music</button>
+
+    <div class="section">
+      <h2>✨ About</h2>
+      <p>
+        Serynna is a chill Minecraft player who loves aesthetic builds, vibing,
+        and playing with 
+        <a href="https://nicoprojects.dev/serynna/info/nico.html" target="_blank" class="nico-link">
+          Nico 💙
+        </a>
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>🎮 Fun Facts</h2>
+      <p>• Late night gamer 🌙</p>
+      <p>• Nature builder 🌿</p>
+      <p>• Slightly competitive 👀</p>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>© 2026 Serynna</p>
+  </footer>
+</div>
+
+<audio id="music" loop>
+  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b0c8d.mp3" type="audio/mpeg">
+</audio>
 
 <script>
-function copyIP() {
-    navigator.clipboard.writeText("mossSMP.playserver.be");
-    alert("IP copied!");
+// typing effect
+const text = "Serynna 💖";
+let i = 0;
+function type() {
+  if (i < text.length) {
+    document.getElementById("typing").innerHTML += text.charAt(i);
+    i++;
+    setTimeout(type, 80);
+  }
 }
+type();
+
+// music toggle
+function toggleMusic() {
+  const music = document.getElementById("music");
+  if (music.paused) {
+    music.play();
+  } else {
+    music.pause();
+  }
+}
+
+// hearts animation
+const canvas = document.getElementById('hearts');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let hearts = [];
+for (let i = 0; i < 50; i++) {
+  hearts.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    size: Math.random() * 6 + 2,
+    speed: Math.random() * 1 + 0.5
+  });
+}
+
+function drawHeart(x, y, size) {
+  ctx.fillStyle = '#ff7ac6';
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.bezierCurveTo(x, y - size, x - size, y - size, x - size, y);
+  ctx.bezierCurveTo(x - size, y + size, x, y + size * 1.5, x, y + size * 2);
+  ctx.bezierCurveTo(x, y + size * 1.5, x + size, y + size, x + size, y);
+  ctx.bezierCurveTo(x + size, y - size, x, y - size, x, y);
+  ctx.fill();
+}
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  hearts.forEach(h => {
+    drawHeart(h.x, h.y, h.size);
+    h.y += h.speed;
+    if (h.y > canvas.height) {
+      h.y = 0;
+      h.x = Math.random() * canvas.width;
+    }
+  });
+  requestAnimationFrame(animate);
+}
+animate();
 </script>
 
 </body>
