@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WIP Cool Page</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+      animation: fadeIn 2s ease;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
+
+    .highlight {
+      color: #00ffe7;
+      text-shadow: 0 0 10px #00ffe7;
+    }
+
+    button {
+      padding: 12px 25px;
+      font-size: 16px;
+      border: none;
+      border-radius: 25px;
+      background: #00ffe7;
+      color: black;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+      background: #00c3ff;
+    }
+
+    .box {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 15px;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      display: none;
+      animation: slideUp 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    @keyframes slideUp {
+      from {transform: translateY(20px); opacity: 0;}
+      to {transform: translateY(0); opacity: 1;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🚧 Work In <span class="highlight">Progress</span></h1>
+  <p>Something cool is being built...</p>
+
+  <button onclick="showBox()">Click Me</button>
+
+  <div class="box" id="box">
+    ✨ More features coming soon...
+  </div>
+</div>
+
+<script>
+  function showBox() {
+    const box = document.getElementById("box");
+    box.style.display = "block";
+  }
+</script>
+
+</body>
+</html>
