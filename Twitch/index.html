@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>nico100110382</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  height: 100vh;
+  background: radial-gradient(circle at 20% 20%, #1a1a2e, #0b0b0f);
+  overflow-x: hidden;
+  color: white;
+}
+
+/* Animated gradient glow */
+body::before {
+  content: "";
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #9147ff55, transparent);
+  top: -100px;
+  left: -100px;
+  filter: blur(120px);
+  animation: moveGlow 10s infinite alternate;
+}
+
+@keyframes moveGlow {
+  to {
+    transform: translate(200px, 150px);
+  }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 20px;
+}
+
+/* Title */
+.title {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #9147ff, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Status */
+.status {
+  margin-bottom: 25px;
+  font-size: 18px;
+}
+
+.live { color: #00ff88; }
+.offline { color: #ff4d4d; }
+
+/* Glass card */
+.card {
+  width: 100%;
+  max-width: 900px;
+  backdrop-filter: blur(20px);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 0 40px rgba(145,71,255,0.15);
+}
+
+/* Player */
+iframe {
+  width: 100%;
+  height: 500px;
+  border-radius: 15px;
+  border: none;
+}
+
+/* Button */
+.button {
+  margin-top: 20px;
+  padding: 12px 25px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #9147ff, #6d28ff);
+  color: white;
+  text-decoration: none;
+  display: inline-block;
+  transition: 0.3s;
+}
+
+.button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px #9147ff88;
+}
+
+/* Footer small */
+.footer {
+  position: absolute;
+  bottom: 15px;
+  opacity: 0.5;
+  font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="title">nico100110382</div>
+  <div id="status" class="status">Checking stream...</div>
+
+  <div class="card">
+    <div id="player"></div>
+  </div>
+
+  <a href="https://twitch.tv/nico100110382" target="_blank" class="button">
+    Open Twitch
+  </a>
+
+  <div class="footer">powered by your stream ⚡</div>
+</div>
+
+<script>
+async function checkLive() {
+  const username = "nico100110382";
+
+  try {
+    const res = await fetch(`https://www.henrikhjelm.se/api/twitch.php?user=${username}`);
+    const data = await res.json();
+
+    const status = document.getElementById("status");
+    const player = document.getElementById("player");
+
+    if (data.live === "yes") {
+      status.innerHTML = "🔴 LIVE NOW";
+      status.className = "status live";
+
+      player.innerHTML = `
+        <iframe
+          src="https://player.twitch.tv/?channel=${username}&parent=localhost"
+          allowfullscreen>
+        </iframe>
+      `;
+    } else {
+      status.innerHTML = "⚫ Offline";
+      status.className = "status offline";
+
+      player.innerHTML = `
+        <div style="padding:40px; opacity:0.7;">
+          Stream is offline… come back later 👀
+        </div>
+      `;
+    }
+
+  } catch (e) {
+    document.getElementById("status").innerText = "Error loading stream.";
+  }
+}
+
+checkLive();
+setInterval(checkLive, 60000);
+</script>
+
+</body>
+</html>
