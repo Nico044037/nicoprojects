@@ -16,101 +16,122 @@
 }
 
 body {
-  height: 100vh;
-  background: radial-gradient(circle at 20% 20%, #1a1a2e, #0b0b0f);
-  overflow-x: hidden;
+  background: #07070a;
   color: white;
+  overflow-x: hidden;
 }
 
-/* Animated gradient glow */
-body::before {
-  content: "";
+/* 🔮 Animated gradient blobs */
+.blob {
   position: fixed;
-  width: 600px;
-  height: 600px;
+  width: 500px;
+  height: 500px;
   background: radial-gradient(circle, #9147ff55, transparent);
-  top: -100px;
-  left: -100px;
-  filter: blur(120px);
-  animation: moveGlow 10s infinite alternate;
+  filter: blur(140px);
+  z-index: -1;
+  animation: float 12s infinite alternate ease-in-out;
 }
 
-@keyframes moveGlow {
+.blob:nth-child(1) { top: -100px; left: -100px; }
+.blob:nth-child(2) { bottom: -100px; right: -100px; background: radial-gradient(circle, #c084fc55, transparent); }
+
+@keyframes float {
   to {
-    transform: translate(200px, 150px);
+    transform: translate(150px, 120px) scale(1.2);
   }
 }
 
+/* ✨ Particle canvas */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -2;
+}
+
+/* Container */
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100vh;
-  padding: 20px;
+  padding: 60px 20px;
 }
 
 /* Title */
 .title {
-  font-size: 48px;
+  font-size: 60px;
   font-weight: 700;
-  margin-bottom: 10px;
   background: linear-gradient(90deg, #9147ff, #c084fc);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+
+/* Subtitle */
+.subtitle {
+  opacity: 0.7;
+  margin-bottom: 30px;
 }
 
 /* Status */
 .status {
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   font-size: 18px;
 }
-
 .live { color: #00ff88; }
 .offline { color: #ff4d4d; }
 
 /* Glass card */
 .card {
   width: 100%;
-  max-width: 900px;
-  backdrop-filter: blur(20px);
+  max-width: 1000px;
+  backdrop-filter: blur(25px);
   background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
   border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 0 40px rgba(145,71,255,0.15);
+  padding: 25px;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 0 60px rgba(145,71,255,0.15);
+  transition: 0.4s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 80px rgba(145,71,255,0.3);
 }
 
 /* Player */
 iframe {
   width: 100%;
-  height: 500px;
+  height: 520px;
   border-radius: 15px;
   border: none;
 }
 
-/* Button */
+/* Buttons */
+.buttons {
+  margin-top: 25px;
+}
+
 .button {
-  margin-top: 20px;
   padding: 12px 25px;
   border-radius: 12px;
   background: linear-gradient(90deg, #9147ff, #6d28ff);
   color: white;
   text-decoration: none;
+  margin: 5px;
   display: inline-block;
   transition: 0.3s;
 }
 
 .button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 20px #9147ff88;
+  transform: scale(1.08);
+  box-shadow: 0 0 25px #9147ff88;
 }
 
-/* Footer small */
+/* Footer */
 .footer {
-  position: absolute;
-  bottom: 15px;
-  opacity: 0.5;
+  margin-top: 40px;
+  opacity: 0.4;
   font-size: 12px;
 }
 </style>
@@ -118,22 +139,30 @@ iframe {
 
 <body>
 
+<!-- Background -->
+<div class="blob"></div>
+<div class="blob"></div>
+<canvas id="particles"></canvas>
+
 <div class="container">
   <div class="title">nico100110382</div>
+  <div class="subtitle">Streaming • Gaming • Chaos ⚡</div>
+
   <div id="status" class="status">Checking stream...</div>
 
   <div class="card">
     <div id="player"></div>
   </div>
 
-  <a href="https://twitch.tv/nico100110382" target="_blank" class="button">
-    Open Twitch
-  </a>
+  <div class="buttons">
+    <a href="https://twitch.tv/nico100110382" target="_blank" class="button">Twitch</a>
+  </div>
 
-  <div class="footer">powered by your stream ⚡</div>
+  <div class="footer">⚡ norisk-style clone</div>
 </div>
 
 <script>
+// 🎥 Twitch live check
 async function checkLive() {
   const username = "nico100110382";
 
@@ -149,29 +178,62 @@ async function checkLive() {
       status.className = "status live";
 
       player.innerHTML = `
-        <iframe
-          src="https://player.twitch.tv/?channel=${username}&parent=localhost"
-          allowfullscreen>
-        </iframe>
+        <iframe src="https://player.twitch.tv/?channel=${username}&parent=localhost" allowfullscreen></iframe>
       `;
     } else {
       status.innerHTML = "⚫ Offline";
       status.className = "status offline";
 
-      player.innerHTML = `
-        <div style="padding:40px; opacity:0.7;">
-          Stream is offline… come back later 👀
-        </div>
-      `;
+      player.innerHTML = `<div style="padding:50px;opacity:0.6;">Offline… come back later 👀</div>`;
     }
 
-  } catch (e) {
+  } catch {
     document.getElementById("status").innerText = "Error loading stream.";
   }
 }
 
 checkLive();
 setInterval(checkLive, 60000);
+
+// ✨ Particles
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+for (let i = 0; i < 80; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 2,
+    dx: Math.random() - 0.5,
+    dy: Math.random() - 0.5
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  particles.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = "#9147ff";
+    ctx.fill();
+
+    p.x += p.dx;
+    p.y += p.dy;
+
+    if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+  });
+
+  requestAnimationFrame(draw);
+}
+
+draw();
 </script>
 
 </body>
