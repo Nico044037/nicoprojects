@@ -21,7 +21,20 @@ body {
   overflow-x: hidden;
 }
 
-/* 🔮 Animated gradient blobs */
+/* 🧍 Minecraft Skin Background */
+.skin-bg {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 900px;
+  opacity: 0.05;
+  z-index: -3;
+  pointer-events: none;
+  filter: blur(1.5px);
+}
+
+/* 🔮 Animated blobs */
 .blob {
   position: fixed;
   width: 500px;
@@ -32,8 +45,8 @@ body {
   animation: float 12s infinite alternate ease-in-out;
 }
 
-.blob:nth-child(1) { top: -100px; left: -100px; }
-.blob:nth-child(2) { bottom: -100px; right: -100px; background: radial-gradient(circle, #c084fc55, transparent); }
+.blob:nth-child(2) { top: -100px; left: -100px; }
+.blob:nth-child(3) { bottom: -100px; right: -100px; background: radial-gradient(circle, #c084fc55, transparent); }
 
 @keyframes float {
   to {
@@ -41,7 +54,7 @@ body {
   }
 }
 
-/* ✨ Particle canvas */
+/* ✨ Particles */
 canvas {
   position: fixed;
   top: 0;
@@ -49,7 +62,7 @@ canvas {
   z-index: -2;
 }
 
-/* Container */
+/* Layout */
 .container {
   display: flex;
   flex-direction: column;
@@ -57,7 +70,6 @@ canvas {
   padding: 60px 20px;
 }
 
-/* Title */
 .title {
   font-size: 60px;
   font-weight: 700;
@@ -67,7 +79,6 @@ canvas {
   margin-bottom: 10px;
 }
 
-/* Subtitle */
 .subtitle {
   opacity: 0.7;
   margin-bottom: 30px;
@@ -81,7 +92,7 @@ canvas {
 .live { color: #00ff88; }
 .offline { color: #ff4d4d; }
 
-/* Glass card */
+/* Card */
 .card {
   width: 100%;
   max-width: 1000px;
@@ -127,21 +138,19 @@ iframe {
   transform: scale(1.08);
   box-shadow: 0 0 25px #9147ff88;
 }
-
-/* Footer */
-.footer {
-  margin-top: 40px;
-  opacity: 0.4;
-  font-size: 12px;
-}
 </style>
 </head>
 
 <body>
 
-<!-- Background -->
+<!-- 🧍 Skin background -->
+<img class="skin-bg" src="https://mc-heads.net/body/AvoidMyNooci/600" />
+
+<!-- Glow blobs -->
 <div class="blob"></div>
 <div class="blob"></div>
+
+<!-- Particles -->
 <canvas id="particles"></canvas>
 
 <div class="container">
@@ -157,8 +166,6 @@ iframe {
   <div class="buttons">
     <a href="https://twitch.tv/nico100110382" target="_blank" class="button">Twitch</a>
   </div>
-
-  <div class="footer">⚡ norisk-style clone</div>
 </div>
 
 <script>
