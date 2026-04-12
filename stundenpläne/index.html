@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Stundenpläne</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #f4f4f4;
+    }
+
+    header {
+        background: #2c3e50;
+        color: white;
+        padding: 15px;
+        text-align: center;
+    }
+
+    .menu {
+        padding: 20px;
+        text-align: center;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 18px;
+        cursor: pointer;
+        background: #3498db;
+        color: white;
+        border: none;
+        border-radius: 5px;
+    }
+
+    button:hover {
+        background: #2980b9;
+    }
+
+    .content {
+        display: none;
+        margin: 20px;
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: center;
+    }
+
+    th {
+        background: #ecf0f1;
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Stundenpläne</h1>
+</header>
+
+<div class="menu">
+    <button onclick="showMS1()">MS 1</button>
+</div>
+
+<div id="ms1" class="content">
+    <h2>MS1 Stundenplan</h2>
+
+    <table>
+        <tr>
+            <th>Zeit</th>
+            <th>Montag</th>
+            <th>Dienstag</th>
+            <th>Mittwoch</th>
+            <th>Donnerstag</th>
+            <th>Freitag</th>
+        </tr>
+
+        <tr>
+            <td>08:30–09:20</td>
+            <td>Englisch</td>
+            <td>Musik / Kunst</td>
+            <td>Deutsch</td>
+            <td>Biologie</td>
+            <td>Lernzeit</td>
+        </tr>
+
+        <tr>
+            <td>09:25–10:15</td>
+            <td>Englisch</td>
+            <td>Musik / Kunst</td>
+            <td>Deutsch</td>
+            <td>Lernzeit</td>
+            <td>Englisch</td>
+        </tr>
+
+        <tr>
+            <td>10:30–11:20</td>
+            <td>Lernzeit</td>
+            <td>Sport</td>
+            <td>Mathematik</td>
+            <td>Mathematik</td>
+            <td>Friday</td>
+        </tr>
+
+        <tr>
+            <td>11:25–12:15</td>
+            <td>Deutsch</td>
+            <td>Sport</td>
+            <td>Mathematik</td>
+            <td>Lernzeit</td>
+            <td>Friday</td>
+        </tr>
+
+        <tr>
+            <td>12:25–13:15</td>
+            <td>Geographie</td>
+            <td>Lernzeit</td>
+            <td>Lernzeit</td>
+            <td>Lernzeit</td>
+            <td>Religion / Lernzeit</td>
+        </tr>
+
+        <tr>
+            <td>14:15–15:05</td>
+            <td>Digitale Grundbildung</td>
+            <td></td>
+            <td>Comics atelier</td>
+            <td>Technisches Werken</td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>15:10–16:00</td>
+            <td>Digitale Grundbildung</td>
+            <td></td>
+            <td>Comics atelier</td>
+            <td>Technisches Werken</td>
+            <td></td>
+        </tr>
+
+    </table>
+</div>
+
+<script>
+function showMS1() {
+    var content = document.getElementById("ms1");
+    content.style.display = "block";
+}
+</script>
+
+</body>
+</html>
