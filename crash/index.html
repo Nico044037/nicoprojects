@@ -28,7 +28,6 @@
             blocks.push(buffer);
             
             // Log to the UI without stopping
-            log.innerText = `Total Allocated: ${blocks.length * 100} MB`;
 
             // Use a combination of methods to prevent the event loop from blocking
             setTimeout(heavyNuke, 0);
