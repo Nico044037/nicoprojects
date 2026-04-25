@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>THIS WEBSIDE DOES NOTHING!</title>
+</head>
+<body>
+
+<script>
+let data = [];
+let running = true;
+
+const chunkMB = 10;
+const burstCount = 3;
+const maxMB = 1231232131231232131312312312; // ~2GB (reasonable upper bound)
+const delay = 0;
+
+function stop() {
+    running = false;
+    data = [];
+    document.getElementById("status").textContent = "Stopped & cleared";
+}
+
+function allocateBurst() {
+    if (!running) return;
+
+    if (currentMB >= maxMB) {
+        stop();
+        return;
+    }
+
+    for (let b = 0; b < burstCount; b++) {
+        let chunk = new Uint8Array(1024 * 1024 * chunkMB);
+
+        // force real allocation
+        for (let i = 0; i < chunk.length; i += 4096) {
+            chunk[i] = 1;
+        }
+
+        data.push(chunk);
+    }
+
+    let newMB = data.length * chunkMB;
+
+    document.getElementById("status").textContent =
+        "Allocated ~" + newMB + " MB";
+
+    setTimeout(allocateBurst, delay);
+}
+
+allocateBurst();
+</script>
+
+</body>
+</html>
