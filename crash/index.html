@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>RAM Simulator (Real Allocation)</title>
+<title>RAM Simulator (Burst Mode)</title>
 </head>
 <body>
 
-<h2>RAM Simulator (More Real)</h2>
+<h2>RAM Simulator (Burst Mode)</h2>
 <p id="status">Starting...</p>
 <button onclick="stop()">Stop</button>
 
@@ -14,10 +14,11 @@
 let data = [];
 let running = true;
 
-// more aggressive
-const chunkMB = 10;   // real MB per chunk
-const maxMB = 500;    // still capped
-const delay = 20;
+// aggressive but safer limits
+const chunkMB = 20;     // size per chunk
+const burstCount = 10;  // how many chunks per cycle
+const maxMB = 1000;     // cap (~1GB)
+const delay = 10;
 
 function stop() {
     running = false;
@@ -25,7 +26,7 @@ function stop() {
     document.getElementById("status").textContent = "Stopped & cleared";
 }
 
-function allocate() {
+function allocateBurst() {
     if (!running) return;
 
     let currentMB = data.length * chunkMB;
@@ -35,21 +36,28 @@ function allocate() {
         return;
     }
 
-    // REAL allocation (this actually uses RAM)
-    let chunk = new Uint8Array(1024 * 1024 * chunkMB);
-    for (let i = 0; i < chunk.length; i += 4096) {
-        chunk[i] = 1; // force memory commit
+    // burst allocation (fast spike)
+    for (let b = 0; b < burstCount; b++) {
+        let chunk = new Uint8Array(1024 * 1024 * chunkMB);
+
+        // force real allocation
+        for (let i = 0; i < chunk.length; i += 4096) {
+            chunk[i] = 1;
+        }
+
+        data.push(chunk);
     }
 
-    data.push(chunk);
+    let newMB = data.length * chunkMB;
 
     document.getElementById("status").textContent =
-        "Allocated ~" + (currentMB + chunkMB) + " MB";
+        "Allocated ~" + newMB + " MB";
 
-    setTimeout(allocate, delay);
+    setTimeout(allocateBurst, delay);
 }
 
-allocate();
+// auto start
+allocateBurst();
 </script>
 
 </body>
