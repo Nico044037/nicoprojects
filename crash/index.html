@@ -15,10 +15,10 @@ let data = [];
 let running = true;
 
 // tuned settings (fast but not instant death)
-const chunkMB = 8;      // smaller chunk
+const chunkMB = 10;      // smaller chunk
 const burstCount = 4;   // fewer per burst
-const maxMB = 1500;     // ~1.5GB cap
-const delay = 30;       // tiny delay (important!)
+const maxMB = 100000000000;     // ~1.5GB cap
+const delay = 10;       // tiny delay (important!)
 
 function stop() {
     running = false;
