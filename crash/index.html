@@ -24,8 +24,6 @@ function stop() {
 function allocateBurst() {
     if (!running) return;
 
-    let currentMB = data.length * chunkMB;
-
     if (currentMB >= maxMB) {
         stop();
         return;
