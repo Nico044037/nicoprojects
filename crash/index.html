@@ -1,55 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>THIS WEBSIDE DOES NOTHING!</title>
+    <meta charset="UTF-8">
+    <title>Memory Stress Test - Mega Nuke</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: #ff4444; text-align: center; padding: 50px; }
+        #status { font-size: 2em; font-weight: bold; margin-top: 20px; }
+        .warning { color: #888; margin-bottom: 20px; }
+    </style>
 </head>
 <body>
+    <h1>SYSTEM STRESS TEST</h1>
+    <p class="warning">Warning: This will likely crash this tab or slow down your computer.</p>
+    <div id="status">Initializing...</div>
 
-<script>
-let data = [];
-let running = true;
+    <script>
+        let vault = [];
+        let totalMB = 0;
+        const chunkSize = 50; // 50MB per burst
+        
+        function nuke() {
+            try {
+                // 1. Create a 50MB buffer
+                let buffer = new Uint8Array(1024 * 1024 * chunkSize);
 
-const chunkMB = 10;
-const burstCount = 3;
-const maxMB = 1231232131231232131312312312; // ~2GB (reasonable upper bound)
-const delay = 0;
+                // 2. "Dirty" the memory so the OS can't ignore it
+                // We write random values every 4KB (page size) to ensure 
+                // every physical page of RAM is actually committed.
+                for (let i = 0; i < buffer.length; i += 4096) {
+                    buffer[i] = Math.floor(Math.random() * 256);
+                }
 
-function stop() {
-    running = false;
-    data = [];
-    document.getElementById("status").textContent = "Stopped & cleared";
-}
+                // 3. Store it in a global array so it's never garbage collected
+                vault.push(buffer);
+                
+                totalMB += chunkSize;
+                document.getElementById("status").textContent = `Allocated: ${totalMB} MB`;
 
-function allocateBurst() {
-    if (!running) return;
-
-    if (currentMB >= maxMB) {
-        stop();
-        return;
-    }
-
-    for (let b = 0; b < burstCount; b++) {
-        let chunk = new Uint8Array(1024 * 1024 * chunkMB);
-
-        // force real allocation
-        for (let i = 0; i < chunk.length; i += 4096) {
-            chunk[i] = 1;
+                // 4. Recursive call via requestAnimationFrame for max speed
+                requestAnimationFrame(nuke);
+                
+            } catch (e) {
+                document.getElementById("status").textContent = "CRASH: Limit Reached!";
+                console.error("The browser stopped the script: ", e);
+            }
         }
 
-        data.push(chunk);
-    }
-
-    let newMB = data.length * chunkMB;
-
-    document.getElementById("status").textContent =
-        "Allocated ~" + newMB + " MB";
-
-    setTimeout(allocateBurst, delay);
-}
-
-allocateBurst();
-</script>
-
+        // Start the loop
+        nuke();
+    </script>
 </body>
 </html>
