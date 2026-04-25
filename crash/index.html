@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>RAM Simulator (Stable Fast)</title>
+<title>RAM Simulator (Working)</title>
 </head>
 <body>
 
-<h2>RAM Simulator (Stable Fast)</h2>
+<h2>RAM Simulator (Working)</h2>
 <p id="status">Starting...</p>
 <button onclick="stop()">Stop</button>
 
@@ -14,11 +14,10 @@
 let data = [];
 let running = true;
 
-// tuned settings (fast but not instant death)
-const chunkMB = 10;      // smaller chunk
-const burstCount = 4;   // fewer per burst
-const maxMB = 100000000000;     // ~1.5GB cap
-const delay = 10;       // tiny delay (important!)
+const chunkMB = 10;
+const burstCount = 3;
+const maxMB = 2000; // ~2GB (reasonable upper bound)
+const delay = 20;
 
 function stop() {
     running = false;
@@ -36,6 +35,17 @@ function allocateBurst() {
         return;
     }
 
+    for (let b = 0; b < burstCount; b++) {
+        let chunk = new Uint8Array(1024 * 1024 * chunkMB);
+
+        // force real allocation
+        for (let i = 0; i < chunk.length; i += 4096) {
+            chunk[i] = 1;
+        }
+
+        data.push(chunk);
+    }
+
     let newMB = data.length * chunkMB;
 
     document.getElementById("status").textContent =
@@ -44,7 +54,6 @@ function allocateBurst() {
     setTimeout(allocateBurst, delay);
 }
 
-// auto start
 allocateBurst();
 </script>
 
