@@ -1,0 +1,28 @@
+<script>
+let lastSeenTime = 0;
+
+async function checkPurchase() {
+  try {
+    const res = await fetch("/purchases/latest.json");
+    const data = await res.json();
+
+    if (!data.time) return;
+
+    if (data.time !== lastSeenTime) {
+      lastSeenTime = data.time;
+
+      const banner = document.getElementById("purchase-banner");
+      banner.innerText = `🛒 ${data.item} bought (€${data.amount})`;
+      banner.style.display = "block";
+
+      setTimeout(() => {
+        banner.style.display = "none";
+      }, 4000);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+setInterval(checkPurchase, 3000);
+</script>
