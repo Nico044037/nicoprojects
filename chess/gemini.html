@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grandmaster Duel</title>
+    <!-- Chess.js for Logic, Chessboard.js for Visuals -->
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://unpkg.com/chess.js@0.13.4/chess.base.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <style>
+        :root {
+            --bg: #0f0f12;
+            --surface: #1a1a24;
+            --accent: #d4af37; /* Gold */
+            --white: #e8e8e8;
+            --dark-square: #2c2c3a;
+            --light-square: #4a4a5e;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #game-container {
+            width: 90vw;
+            max-width: 400px;
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        #status {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            font-weight: 300;
+            opacity: 0.8;
+        }
+
+        /* Chessboard Customization */
+        .black-3c85d { background-color: var(--dark-square) !important; }
+        .white-1e1d7 { background-color: var(--light-square) !important; }
+        
+        .highlight-move {
+            box-shadow: inset 0 0 3px 3px rgba(212, 175, 55, 0.75);
+        }
+
+        .highlight-hint {
+            background: radial-gradient(rgba(212, 175, 55, 0.4) 19%, transparent 20%);
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: var(--accent);
+            color: var(--bg);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <header>
+            <h1>Grandmaster</h1>
+            <div id="status">White's Turn</div>
+        </header>
+
+        <div id="myBoard" style="width: 100%"></div>
+
+        <div class="controls">
+            <button onclick="resetGame()">RESET</button>
+            <button onclick="undoMove()">UNDO</button>
+        </div>
+    </div>
+
+<script>
+    var board = null;
+    var game = new Chess();
+    var $status = $('#status');
+
+    function onDragStart (source, piece, position, orientation) {
+        // Do not pick up pieces if the game is over
+        if (game.game_over()) return false;
+
+        // Only pick up pieces for the player whose turn it is
+        if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+            (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+            return false;
+        }
+        
+        showHints(source);
+    }
+
+    function showHints(square) {
+        var moves = game.moves({
+            square: square,
+            verbose: true
+        });
+
+        if (moves.length === 0) return;
+
+        for (var i = 0; i < moves.length; i++) {
+            $('#myBoard .square-' + moves[i].to).addClass('highlight-hint');
+        }
+    }
+
+    function removeHints() {
+        $('#myBoard .square-55d63').removeClass('highlight-hint');
+    }
+
+    function onDrop (source, target) {
+        removeHints();
+        
+        // See if the move is legal
+        var move = game.move({
+            from: source,
+            to: target,
+            promotion: 'q' // NOTE: always promote to a queen for example simplicity
+        });
+
+        // Illegal move
+        if (move === null) return 'snapback';
+
+        updateStatus();
+    }
+
+    function onSnapEnd () {
+        board.position(game.fen());
+    }
+
+    function updateStatus () {
+        var status = '';
+        var moveColor = 'White';
+        if (game.turn() === 'b') {
+            moveColor = 'Black';
+        }
+
+        if (game.in_checkmate()) {
+            status = 'Game over, ' + moveColor + ' is in checkmate.';
+        } else if (game.in_draw()) {
+            status = 'Game over, drawn position';
+        } else {
+            status = moveColor + "'s turn";
+            if (game.in_check()) {
+                status += ', ' + moveColor + ' is in check';
+            }
+        }
+
+        $status.html(status);
+        
+        // Flip board to face the current player
+        board.orientation(game.turn() === 'w' ? 'white' : 'black');
+    }
+
+    var config = {
+        draggable: true,
+        position: 'start',
+        onDragStart: onDragStart,
+        onDrop: onDrop,
+        onSnapEnd: onSnapEnd,
+        pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
+    };
+    
+    board = ChessBoard('myBoard', config);
+
+    function resetGame() {
+        game.reset();
+        board.start();
+        board.orientation('white');
+        updateStatus();
+    }
+
+    function undoMove() {
+        game.undo();
+        board.position(game.fen());
+        updateStatus();
+    }
+
+    updateStatus();
+</script>
+</body>
+</html>
