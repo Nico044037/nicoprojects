@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Epic Chess Duel</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#111827,#1e293b);
+    color:white;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+h1{
+    margin-bottom:10px;
+    font-size:3rem;
+    text-shadow:0 0 10px rgba(255,255,255,0.3);
+}
+
+.info{
+    margin-bottom:20px;
+    font-size:1.2rem;
+    padding:12px 24px;
+    background:rgba(255,255,255,0.08);
+    border-radius:14px;
+    backdrop-filter:blur(8px);
+    box-shadow:0 0 20px rgba(0,0,0,0.4);
+}
+
+.board{
+    width:min(92vw,720px);
+    height:min(92vw,720px);
+    display:grid;
+    grid-template-columns:repeat(8,1fr);
+    grid-template-rows:repeat(8,1fr);
+    border:8px solid #0f172a;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:
+        0 0 40px rgba(0,0,0,0.6),
+        0 0 20px rgba(255,255,255,0.1);
+}
+
+.square{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:clamp(28px,5vw,60px);
+    user-select:none;
+    position:relative;
+    transition:0.15s;
+}
+
+.light{
+    background:#f0d9b5;
+}
+
+.dark{
+    background:#b58863;
+}
+
+.square.selected{
+    box-shadow:inset 0 0 0 6px #00e5ff;
+}
+
+.square.move::after{
+    content:"";
+    width:22%;
+    height:22%;
+    background:rgba(0,255,100,0.8);
+    border-radius:50%;
+    position:absolute;
+}
+
+.square.capture::after{
+    content:"";
+    width:80%;
+    height:80%;
+    border:5px solid rgba(255,0,80,0.9);
+    border-radius:50%;
+    position:absolute;
+}
+
+.controls{
+    margin-top:20px;
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+button{
+    border:none;
+    padding:14px 24px;
+    border-radius:12px;
+    font-size:1rem;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.2s;
+    color:white;
+}
+
+button:hover{
+    transform:translateY(-2px) scale(1.03);
+}
+
+.reset{
+    background:#ef4444;
+}
+
+.theme{
+    background:#3b82f6;
+}
+
+.footer{
+    margin-top:18px;
+    opacity:0.8;
+    text-align:center;
+}
+
+.turn-white{
+    color:#fff;
+}
+
+.turn-black{
+    color:#ffd166;
+}
+</style>
+</head>
+<body>
+
+<h1>♟ Epic Chess Duel</h1>
+
+<div class="info" id="status">
+    White's Turn
+</div>
+
+<div class="board" id="board"></div>
+
+<div class="controls">
+    <button class="reset" onclick="resetGame()">Reset Game</button>
+    <button class="theme" onclick="toggleTheme()">Change Theme</button>
+</div>
+
+<div class="footer">
+    2 Players • One Phone • Smart Move Checking
+</div>
+
+<script>
+const boardElement = document.getElementById("board");
+const statusElement = document.getElementById("status");
+
+const pieces = {
+    wp:"♙", wr:"♖", wn:"♘", wb:"♗", wq:"♕", wk:"♔",
+    bp:"♟", br:"♜", bn:"♞", bb:"♝", bq:"♛", bk:"♚"
+};
+
+let currentPlayer = "w";
+let selected = null;
+let possibleMoves = [];
+
+let board = [];
+
+function createStartingBoard(){
+    return [
+        ["br","bn","bb","bq","bk","bb","bn","br"],
+        ["bp","bp","bp","bp","bp","bp","bp","bp"],
+        ["","","","","","","",""],
+        ["","","","","","","",""],
+        ["","","","","","","",""],
+        ["","","","","","","",""],
+        ["wp","wp","wp","wp","wp","wp","wp","wp"],
+        ["wr","wn","wb","wq","wk","wb","wn","wr"]
+    ];
+}
+
+function renderBoard(){
+    boardElement.innerHTML = "";
+
+    for(let row=0; row<8; row++){
+        for(let col=0; col<8; col++){
+
+            const square = document.createElement("div");
+
+            square.classList.add("square");
+            square.classList.add((row+col)%2===0 ? "light" : "dark");
+
+            square.dataset.row = row;
+            square.dataset.col = col;
+
+            const piece = board[row][col];
+
+            if(piece){
+                square.textContent = pieces[piece];
+            }
+
+            if(selected &&
+                selected.row === row &&
+                selected.col === col){
+                square.classList.add("selected");
+            }
+
+            const move = possibleMoves.find(m => m.row===row && m.col===col);
+
+            if(move){
+                if(board[row][col] !== ""){
+                    square.classList.add("capture");
+                }else{
+                    square.classList.add("move");
+                }
+            }
+
+            square.addEventListener("click", () => handleClick(row,col));
+
+            boardElement.appendChild(square);
+        }
+    }
+
+    statusElement.innerHTML =
+        currentPlayer === "w"
+        ? "<span class='turn-white'>White's Turn</span>"
+        : "<span class='turn-black'>Black's Turn</span>";
+}
+
+function handleClick(row,col){
+
+    const piece = board[row][col];
+
+    if(selected){
+
+        const validMove = possibleMoves.find(
+            move => move.row===row && move.col===col
+        );
+
+        if(validMove){
+            movePiece(selected.row, selected.col, row, col);
+            selected = null;
+            possibleMoves = [];
+            currentPlayer = currentPlayer === "w" ? "b" : "w";
+            renderBoard();
+            return;
+        }
+    }
+
+    if(piece && piece[0] === currentPlayer){
+        selected = {row,col};
+        possibleMoves = getValidMoves(row,col,piece);
+    }else{
+        selected = null;
+        possibleMoves = [];
+    }
+
+    renderBoard();
+}
+
+function movePiece(fromRow, fromCol, toRow, toCol){
+    board[toRow][toCol] = board[fromRow][fromCol];
+    board[fromRow][fromCol] = "";
+}
+
+function inside(r,c){
+    return r>=0 && r<8 && c>=0 && c<8;
+}
+
+function getValidMoves(row,col,piece){
+
+    const type = piece[1];
+    const color = piece[0];
+    const enemy = color==="w" ? "b" : "w";
+
+    let moves = [];
+
+    function addSlideMoves(directions){
+
+        directions.forEach(dir => {
+
+            let r = row + dir[0];
+            let c = col + dir[1];
+
+            while(inside(r,c)){
+
+                if(board[r][c] === ""){
+                    moves.push({row:r,col:c});
+                }else{
+                    if(board[r][c][0] === enemy){
+                        moves.push({row:r,col:c});
+                    }
+                    break;
+                }
+
+                r += dir[0];
+                c += dir[1];
+            }
+        });
+    }
+
+    if(type === "p"){
+
+        const dir = color==="w" ? -1 : 1;
+        const startRow = color==="w" ? 6 : 1;
+
+        if(inside(row+dir,col) && board[row+dir][col]===""){
+            moves.push({row:row+dir,col});
+
+            if(row===startRow &&
+               board[row+2*dir][col]===""){
+                moves.push({row:row+2*dir,col});
+            }
+        }
+
+        [-1,1].forEach(dc => {
+            const r = row+dir;
+            const c = col+dc;
+
+            if(inside(r,c) &&
+               board[r][c] !== "" &&
+               board[r][c][0] === enemy){
+                moves.push({row:r,col:c});
+            }
+        });
+    }
+
+    if(type === "r"){
+        addSlideMoves([[1,0],[-1,0],[0,1],[0,-1]]);
+    }
+
+    if(type === "b"){
+        addSlideMoves([[1,1],[1,-1],[-1,1],[-1,-1]]);
+    }
+
+    if(type === "q"){
+        addSlideMoves([
+            [1,0],[-1,0],[0,1],[0,-1],
+            [1,1],[1,-1],[-1,1],[-1,-1]
+        ]);
+    }
+
+    if(type === "n"){
+
+        const knightMoves = [
+            [2,1],[2,-1],[-2,1],[-2,-1],
+            [1,2],[1,-2],[-1,2],[-1,-2]
+        ];
+
+        knightMoves.forEach(m => {
+
+            const r = row + m[0];
+            const c = col + m[1];
+
+            if(inside(r,c) &&
+              (board[r][c] === "" ||
+               board[r][c][0] === enemy)){
+
+                moves.push({row:r,col:c});
+            }
+        });
+    }
+
+    if(type === "k"){
+
+        const kingMoves = [
+            [1,0],[-1,0],[0,1],[0,-1],
+            [1,1],[1,-1],[-1,1],[-1,-1]
+        ];
+
+        kingMoves.forEach(m => {
+
+            const r = row + m[0];
+            const c = col + m[1];
+
+            if(inside(r,c) &&
+              (board[r][c] === "" ||
+               board[r][c][0] === enemy)){
+
+                moves.push({row:r,col:c});
+            }
+        });
+    }
+
+    return moves;
+}
+
+function resetGame(){
+    board = createStartingBoard();
+    currentPlayer = "w";
+    selected = null;
+    possibleMoves = [];
+    renderBoard();
+}
+
+let darkMode = true;
+
+function toggleTheme(){
+
+    darkMode = !darkMode;
+
+    if(darkMode){
+        document.body.style.background =
+            "linear-gradient(135deg,#111827,#1e293b)";
+    }else{
+        document.body.style.background =
+            "linear-gradient(135deg,#4f46e5,#06b6d4)";
+    }
+}
+
+resetGame();
+</script>
+
+</body>
+</html>
